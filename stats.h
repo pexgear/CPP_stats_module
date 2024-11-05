@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+#include <map>
+#include <string>
+#include <vector>
+
 template <typename T>
 class stats
 {
@@ -85,4 +89,36 @@ class stats
         T min_stat = 0.0;
         T max_stat = 0.0;
         T stat = 0.0;    
+};
+
+template <typename T>
+class stats_set 
+{
+    public:
+        stats_set() {};
+
+        ~stats_set() {};
+
+        virtual void stats_init(const std::vector<std::string> names) 
+        {
+            for(const std::string& name : names)
+            {
+                add_stat(name);
+            }            
+        };
+
+        void add_stat(const std::string& name) 
+        {
+            if(stats_map.count(name) <= 0)
+            {
+                add_or_replace_stat(name);
+            }
+        };
+
+        void add_or_replace_stat(const std::string& name) 
+        {
+            stats_map[name] = stats<T>(); 
+        };
+
+        std::map<std::string, stats<T>> stats_map;
 };
