@@ -15,6 +15,11 @@ class stats
             init(_max_stat);
         }
 
+        stats(T _min_stat, T _max_stat)
+        {
+            init_range(_min_stat, _max_stat);
+        }
+
         ~stats() {}
 
     public:
@@ -59,6 +64,11 @@ class stats
             return max_stat;
         }
 
+        virtual T get_min_stat() const
+        {
+            return min_stat;
+        }
+
         virtual void set_stat_unckecked(T _stat)
         {
             set_stat_internal(_stat);
@@ -99,7 +109,7 @@ class stats_set
 
         ~stats_set() {};
 
-        virtual void stats_init(const std::vector<std::string> names) 
+        virtual void init_stats(const std::vector<std::string> names) 
         {
             for(const std::string& name : names)
             {
@@ -115,9 +125,35 @@ class stats_set
             }
         };
 
+        void add_stat(const std::string& name, int max) 
+        {
+            if(stats_map.count(name) <= 0)
+            {
+                add_or_replace_stat(name, max);
+            }
+        };
+
+        void add_stat(const std::string& name, int min, int max) 
+        {
+            if(stats_map.count(name) <= 0)
+            {
+                add_or_replace_stat(name, min, max);
+            }
+        };
+
         void add_or_replace_stat(const std::string& name) 
         {
             stats_map[name] = stats<T>(); 
+        };
+
+        void add_or_replace_stat(const std::string& name, int max) 
+        {
+            stats_map[name] = stats<T>(max); 
+        };
+
+        void add_or_replace_stat(const std::string& name, int min, int max) 
+        {
+            stats_map[name] = stats<T>(min, max); 
         };
 
         std::map<std::string, stats<T>> stats_map;
