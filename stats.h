@@ -131,17 +131,27 @@ class stats
 
         virtual void on_stat_changed(int old_value, int new_value) 
         {
-            on_changed_delegate(name, old_value, new_value);
-        }
-
-        virtual void on_max_stat_reached() 
-        {
-            on_max_delegate(name);
+            if (on_changed_delegate)
+            {
+                on_changed_delegate(name, old_value, new_value);
+            }
+            
         }
 
         virtual void on_min_stat_reached() 
         {
-            on_min_delegate(name);
+            if (on_min_delegate)
+            {
+                on_min_delegate(name);
+            }
+        }
+
+        virtual void on_max_stat_reached() 
+        {
+            if (on_max_delegate)
+            {
+                on_max_delegate(name);
+            }
         }
 
     private:
@@ -212,38 +222,23 @@ class stats_set
         {
             stats_map[_name] = stats<T>(_name, _min, _max);
 
-            set_on_changed_delegate(_name, [this]
+            stats_map[_name].set_on_changed_delegate([this]
             (std::string _name, T _old_value, T _new_value) {
                 this->on_changed(_name, _old_value, _new_value);
             });
-            set_on_min_delegate(_name, [this]
+            stats_map[_name].set_on_min_delegate([this]
             (std::string _name) {
                 this->on_min(_name);
             });
-            set_on_max_delegate(_name, [this]
+            stats_map[_name].set_on_max_delegate([this]
             (std::string _name) {
-                this->on_max(_name);
+            this->on_max(_name);
             });
         };
 
-        stats<T> get_stat_by_name(const string& _name)
+        stats<T>& get_stat_by_name(const string& _name)
         {
             return stats_map[_name];
-        }
-
-        void set_on_changed_delegate(std::function<void(string, T, T)> _delegate)
-        {
-            on_changed_delegate = _delegate;
-        }
-
-        void set_on_min_delegate(std::function<void(string, T, T)> _delegate)
-        {
-            on_min_delegate = _delegate;
-        }
-
-        void set_on_max_delegate(std::function<void(string, T, T)> _delegate)
-        {
-            on_max_delegate = _delegate;
         }
 
         void set_on_changed_delegate(const string& _name, std::function<void(string, T, T)> _delegate)
@@ -264,10 +259,6 @@ class stats_set
         virtual void on_changed(string _name, T _old_value, T _new_value) {};
         virtual void on_min(string _name) {};
         virtual void on_max(string _name) {};
-
-        std::function<void(string, T, T)> on_changed_delegate;
-        std::function<void(string)> on_min_delegate;
-        std::function<void(string)> on_max_delegate;
 
         std::map<string, stats<T>> stats_map;
 };
