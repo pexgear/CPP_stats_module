@@ -50,6 +50,16 @@ class stats
             set_stat_unckecked(max_stat);
         }
 
+        virtual void reset_to_min()
+        {
+            set_stat_unckecked(min_stat);
+        }
+
+        virtual void reset_to_max()
+        {
+            set_stat_unckecked(max_stat);
+        }
+
         virtual void set_stat(T _stat)
         {
             if (_stat < 0.0)
@@ -77,6 +87,16 @@ class stats
         virtual T get_min_stat() const
         {
             return min_stat;
+        }
+
+        virtual void set_max_stat(T _max_stat)
+        {
+            max_stat = _max_stat;
+        }
+
+        virtual void set_min_stat(T _min_stat)
+        {
+            min_stat = _min_stat;
         }
 
         virtual void set_stat_unckecked(T _stat)
